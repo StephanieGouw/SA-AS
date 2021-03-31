@@ -7,6 +7,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.palette.graphics.Palette;
 
 import android.view.View;
 import android.view.Menu;
@@ -16,65 +17,85 @@ import android.widget.Button;
 import android.content.Intent;
 import android.provider.MediaStore;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.util.Log;
 
 public class MainActivity extends AppCompatActivity {
 
     ImageView imageView;
+    Button btnCamera;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btnCamera = (Button)findViewById(R.id.btnCamera);
-        imageView = (ImageView)findViewById(R.id.imageView);
+        btnCamera = (Button) findViewById(R.id.btnCamera);
+        imageView = (ImageView) findViewById(R.id.imageView);
 
         btnCamera.setOnClickListener(new View.OnClickListener() {
             @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    startActivityForResult(intent,0);
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(intent, 0);
 
             }
         });
-
-//        Toolbar toolbar = findViewById(R.id.toolbar);
-//        setSupportActionBar(toolbar);
-//
-//        FloatingActionButton fab = findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult ( int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap = (Bitmap)data.getExtras().get("data");
+        Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+        Log.d("DEBUG", "about to set bit map image");
         imageView.setImageBitmap(bitmap);
+        btnCamera.setBackgroundColor(getDominantColor(bitmap));
+        Log.d("DEBUG", "dominant colour is "+getDominantColor(bitmap));
     }
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
+
+    public int getDominantColor(Bitmap bitmap) {
+        Log.d("DEBUG", "function called");
+        Bitmap newBitmap = Bitmap.createScaledBitmap(bitmap, 1, 1, true);
+        final int color = newBitmap.getPixel(0, 0);
+        newBitmap.recycle();
+        return color;
+    }
+
+//    // Generate palette synchronously and return it
+//    public Palette createPaletteSync (Bitmap bitmap){
+//        Palette p = Palette.from(bitmap).generate();
+//        return p;
 //    }
 //
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
+//    public void setButtonColor(Bitmap bitmap) {
+//        Log.d("DEBUG", "function was called");
+//        // Generate the palette and get the vibrant swatch
+//        // See the createPaletteSync() method
+//        // from the code snippet above
+//        Palette p = createPaletteSync(bitmap);
+//        Palette.Swatch vibrantSwatch = p.getVibrantSwatch();
+//        Log.d("DEBUG", "created palettes");
+//        // Load default colors
+//        int backgroundColor = 17170455;
+////                ContextCompat.getColor(this, R.color.holo_red_dark);
+//        int textColor = 17170458;
+////                ContextCompat.getColor(this, R.color.red);
+//        Log.d("DEBUG", "before, background colour was " + backgroundColor);
+//        Log.d("DEBUG", "before, text colour was " + textColor);
+//        // Check that the Vibrant swatch is available
+//        if(vibrantSwatch != null){
+//            backgroundColor = vibrantSwatch.getRgb();
+//            textColor = vibrantSwatch.getTitleTextColor();
+////            System.out.println("background colour is " + backgroundColor);
+////            System.out.println("text color is " + textColor);
+//            Log.d("DEBUG", "background colour is " + backgroundColor);
+//            Log.d("DEBUG", "text colour is " + textColor);
 //        }
 //
-//        return super.onOptionsItemSelected(item);
+//        Log.d("DEBUG", "after, background colour is " + backgroundColor);
+//        Log.d("DEBUG", "after, text colour is " + textColor);
+//        // Set the toolbar background and text colors
+//        btnCamera.setBackgroundColor(backgroundColor);
+//        Log.d("DEBUG", "background color was set");
+//        //btnCamera.setTitleTextColor(textColor);
 //    }
 }
